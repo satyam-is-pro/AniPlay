@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="title">AniPlay</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="media/logo.png">
+
+</head>
+<body>
+    <div class="container">
+        <div class="container-search">
+            <input type="text" id="queryInput" class="search-input" placeholder="Search anime..." onkeydown="getSearchByEnter(event)">
+            <button id="searchBtn" class="search-button">Search</button>
+            <button id="homeBtn" class="home-button">Home</button>
+            <button onclick="showHistory()" class="history-button">History</button>
+        </div>
+
+        <button id="recentBtn" class="recent">Recent Animes & Episodes</button>
+
+        <div id="mainLoading" style="display: none;">
+            <img src="/media/loading-animation.gif" alt="Loading...">
+        </div>
+
+        <div class="container-sresult" style="display: none;">
+            <div id="animeContainer"></div>
+        </div>
+
+        <div id="animeInfoContainer" style="display: none;">
+            <h1 id="videoTitle"></h1>
+            <p id="videoDescription"></p>
+            <div class="anime-meta">
+                <span id="status"></span>
+                <span id="subordub"></span>
+                <span id="type"></span>
+            </div>
+            <select id="selectElement" class="episodes"></select>
+            <button id="episodeButton" class="watch-ep">Watch</button>
+            <div class="episode-navigation">
+                <button onclick="firstEps()" class="first">First</button>
+                <button onclick="prevEps()" class="previous">Previous</button>
+                <button onclick="nextEps()" class="next">Next</button>
+                <button onclick="lastEps()" class="last">Last</button>
+            </div>
+        </div>
+
+        <div id="qualityContainer" style="display: none;">
+            <div id="serverSelect"></div>
+            <a id="downloadButton" target="_blank">Download</a>
+        </div>
+
+        <div class="video-container">
+            <iframe id="player" src="" allowfullscreen></iframe>
+        </div>
+        <footer>
+            <p>&copy; <span id="currentYear"></span> All rights reserved by Aniplay.</p>
+            <p>Made by <a href="https://github.com/satyam-is-pro" target="_blank">satyam-is-pro</a></p>
+        </footer>
+    </div>
+
+    <div id="dim" class="history" style="display: none;">
+        <div class="historyHead">
+            <span>Watch History</span>
+            <span class="close" onclick="closeHistory()">×</span>
+        </div>
+        <ul id="historyList"></ul>
+        <button onclick="clearHistory()" class="clearHistory">Clear History</button>
+    </div>
+    
+    <script>
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html>
