@@ -577,45 +577,48 @@ function initApp() {
         fetchAnimeInfo();
     }
 }
-let selectedEpisodeIndex = null; // Variable to store the currently selected episode
+// Remove episode playback trigger from episode selection
+function handleEpisodeSelection() {
+    const episodeSelect = document.getElementById("selectElement");
+    const selectedEpisodeId = episodeSelect.value;
 
-function selectEpisode(index) {
-    selectedEpisodeIndex = index; // Update the selected episode index
-    // You can add UI feedback here to show the selected episode
-}
-
-function playSelectedEpisode() {
-    if (selectedEpisodeIndex !== null) {
-        // Only play the episode if one is selected
-        const episode = animeEpisodes[selectedEpisodeIndex];
-        playEpisode(episode); // Function to handle playing the episode
-        addToWatchHistory(episode); // Save to watch history
-    } else {
-        alert("Please select an episode to watch.");
+    if (selectedEpisodeId) {
+        // Enable the Watch button only if an episode is selected
+        watchBtn.disabled = false;
     }
 }
 
-// Call this function for the episode selection buttons
-function nextEpisode() {
-    selectedEpisodeIndex++;
-    if (selectedEpisodeIndex >= animeEpisodes.length) {
-        selectedEpisodeIndex = animeEpisodes.length - 1; // Prevent overflow
+// Add event listener for episode selection to enable Watch button only
+document.getElementById("selectElement").addEventListener("change", handleEpisodeSelection);
+
+// Modify the Watch button event listener to play the episode only when pressed
+watchBtn.addEventListener("click", async function () {
+    const episodeSelect = document.getElementById("selectElement");
+    const selectedEpisodeId = episodeSelect.value;
+
+    if (selectedEpisodeId) {
+        mainLoading.style.display = "flex";
+        watchContainer.style.display = "none";
+        
+        try {
+            // Fetch and load the selected episode data
+            const res = await fetch(`https://${apiEndpoint}/anime/gogoanime/watch/${selectedEpisodeId}`);
+            const episodeData = await res.json();
+            displayWatchInfo(episodeData); // Function to display video and quality options
+
+            // Update history with selected episode
+            const selectedOption = episodeSelect.options[episodeSelect.selectedIndex];
+            dataEpisode = selectedOption.innerText;
+            addHistory(); // Function to save the current episode to watch history
+
+        } catch (error) {
+            console.error("Episode load error:", error);
+            alert("Failed to load episode. Please try again.");
+        } finally {
+            mainLoading.style.display = "none";
+        }
     }
-    selectEpisode(selectedEpisodeIndex); // Update selection
-}
-
-function previousEpisode() {
-    selectedEpisodeIndex--;
-    if (selectedEpisodeIndex < 0) {
-        selectedEpisodeIndex = 0; // Prevent underflow
-    }
-    selectEpisode(selectedEpisodeIndex); // Update selection
-}
-
-// Similar updates for firstEpisode() and lastEpisode()
-
-// Attach the playSelectedEpisode function to the Watch button
-document.getElementById("watchButton").addEventListener("click", playSelectedEpisode);
+});
 
 
 // Run the app
