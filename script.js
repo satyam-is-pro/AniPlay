@@ -240,7 +240,6 @@ function displayWatchInfo(episodeData) {
     const watchContainer = document.getElementById("qualityContainer");
     const videoContainer = document.querySelector(".video-container");
     const videoPlayer = document.getElementById("player");
-    const downloadButton = document.getElementById("downloadButton");
     const serverSelect = document.getElementById("serverSelect");
 
     // Show the quality selection container
@@ -248,13 +247,6 @@ function displayWatchInfo(episodeData) {
     videoContainer.classList.add("show"); // Show video container
     mainLoading.style.display = "none";
     serverSelect.innerHTML = ""; // Clear previous quality options
-
-    // Set the download link (Make sure `episodeData.download` contains a valid download URL)
-    if (episodeData.download) {
-        downloadButton.href = episodeData.download;
-    } else {
-        downloadButton.href = "#"; // Set a default value if there's no download link
-    }
 
     // Populate streaming quality buttons
     episodeData.sources.forEach((stream) => {
@@ -276,7 +268,6 @@ function displayWatchInfo(episodeData) {
         serverSelect.appendChild(optionButton);
     });
 }
-
 
 // Function to handle video playback in iframe
 function handleVideoPlayback(url) {
@@ -586,6 +577,46 @@ function initApp() {
         fetchAnimeInfo();
     }
 }
+let selectedEpisodeIndex = null; // Variable to store the currently selected episode
+
+function selectEpisode(index) {
+    selectedEpisodeIndex = index; // Update the selected episode index
+    // You can add UI feedback here to show the selected episode
+}
+
+function playSelectedEpisode() {
+    if (selectedEpisodeIndex !== null) {
+        // Only play the episode if one is selected
+        const episode = animeEpisodes[selectedEpisodeIndex];
+        playEpisode(episode); // Function to handle playing the episode
+        addToWatchHistory(episode); // Save to watch history
+    } else {
+        alert("Please select an episode to watch.");
+    }
+}
+
+// Call this function for the episode selection buttons
+function nextEpisode() {
+    selectedEpisodeIndex++;
+    if (selectedEpisodeIndex >= animeEpisodes.length) {
+        selectedEpisodeIndex = animeEpisodes.length - 1; // Prevent overflow
+    }
+    selectEpisode(selectedEpisodeIndex); // Update selection
+}
+
+function previousEpisode() {
+    selectedEpisodeIndex--;
+    if (selectedEpisodeIndex < 0) {
+        selectedEpisodeIndex = 0; // Prevent underflow
+    }
+    selectEpisode(selectedEpisodeIndex); // Update selection
+}
+
+// Similar updates for firstEpisode() and lastEpisode()
+
+// Attach the playSelectedEpisode function to the Watch button
+document.getElementById("watchButton").addEventListener("click", playSelectedEpisode);
+
 
 // Run the app
 initApp();
