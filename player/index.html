@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="plyr.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="icon" href="../-media/fav2.svg" sizes="any" type="image/svg+xml">
+  <title>AniPlay</title>
+
+  <style>
+    html {
+      overflow: auto;
+    }
+
+    html,
+    body,
+    iframe {
+      margin: 0px;
+      padding: 0px;
+      height: 100%;
+      border: none;
+    }
+
+    .container {
+      display: block;
+      width: 100%;
+      border: none;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    
+    <video id="videoplayer">
+    </video>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoUrl = urlParams.get('url');
+
+    const video = document.getElementById('videoplayer');
+    const source = document.createElement('source');
+    source.src = videoUrl;
+    source.type = 'application/x-mpegURL';
+    video.appendChild(source);
+  </script>
+  <script src="hls.min.js"></script>
+  <script src="plyr.min.js"></script>
+  <script src="plyr-hls.js"></script>
+
+  <script>
+    const player = new Plyr('#videoplayer', {
+      video,
+      defaultOptions
+    });
+  </script>
+</body>
+
+</html>
