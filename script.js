@@ -17,7 +17,6 @@ var dataURL;
 
 const apiEndpoint = "no-drab.vercel.app";
 
-// Check URL parameters
 function updateUrl(newUrl) {
     window.history.pushState({}, '', newUrl);
 }
@@ -333,20 +332,12 @@ function lastEps() {
 }
 
 // Hiding the Dim
-function closeHistory() {
-    let dimDiv = document.getElementById('dim');
-    dimDiv.style.display = 'none';
-}
-closeHistory()
-
 function showHistory() {
-    let dimDiv = document.getElementById('dim');
-    dimDiv.style.display = 'flex';
-    historyReload();
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
+    document.getElementById("dim").style.display = "flex"; // Display as flex for centering
+}
+
+function closeHistory() {
+    document.getElementById("dim").style.display = "none"; // Hide the popup
 }
 
 // Adding a History
@@ -376,7 +367,6 @@ function addHistory() {
     }
 }
 
-// Reloading the history data
 // Reloading the history data
 const historyLists = document.getElementById('historyList');
 var timedifference;
@@ -442,6 +432,48 @@ function handleEpisodeSelection() {
         loadEpisode(selectedEpisodeId);
     }
 }
+// Remove episode playback trigger from episode selection
+function handleEpisodeSelection() {
+    const episodeSelect = document.getElementById("selectElement");
+    const selectedEpisodeId = episodeSelect.value;
+
+    if (selectedEpisodeId) {
+        // Enable the Watch button only if an episode is selected
+        watchBtn.disabled = false;
+    }
+}
+
+// Add event listener for episode selection to enable Watch button only
+document.getElementById("selectElement").addEventListener("change", handleEpisodeSelection);
+
+// Modify the Watch button event listener to play the episode only when pressed
+watchBtn.addEventListener("click", async function () {
+    const episodeSelect = document.getElementById("selectElement");
+    const selectedEpisodeId = episodeSelect.value;
+
+    if (selectedEpisodeId) {
+        mainLoading.style.display = "flex";
+        watchContainer.style.display = "none";
+        
+        try {
+            // Fetch and load the selected episode data
+            const res = await fetch(`https://${apiEndpoint}/anime/gogoanime/watch/${selectedEpisodeId}`);
+            const episodeData = await res.json();
+            displayWatchInfo(episodeData); // Function to display video and quality options
+
+            // Update history with selected episode
+            const selectedOption = episodeSelect.options[episodeSelect.selectedIndex];
+            dataEpisode = selectedOption.innerText;
+            addHistory(); // Function to save the current episode to watch history
+
+        } catch (error) {
+            console.error("Episode load error:", error);
+            alert("Failed to load episode. Please try again.");
+        } finally {
+            mainLoading.style.display = "none";
+        }
+    }
+});
 
 // Event listener for episode selection
 document.getElementById("selectElement").addEventListener("change", handleEpisodeSelection);
@@ -553,18 +585,6 @@ videoPlayer.addEventListener('ratechange', savePlayerSettings);
 // Initialize player settings
 updatePlayerSettings();
 
-// Function to handle theme switching
-function switchTheme(theme) {
-    document.body.className = theme;
-    localStorage.setItem('theme', theme);
-}
-
-// Check for saved theme preference
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme) {
-    switchTheme(savedTheme);
-}
-
 // Event listener for theme switch buttons
 document.querySelectorAll('.theme-switch').forEach(button => {
     button.addEventListener('click', () => switchTheme(button.dataset.theme));
@@ -577,49 +597,7 @@ function initApp() {
         fetchAnimeInfo();
     }
 }
-// Remove episode playback trigger from episode selection
-function handleEpisodeSelection() {
-    const episodeSelect = document.getElementById("selectElement");
-    const selectedEpisodeId = episodeSelect.value;
-
-    if (selectedEpisodeId) {
-        // Enable the Watch button only if an episode is selected
-        watchBtn.disabled = false;
-    }
-}
-
-// Add event listener for episode selection to enable Watch button only
-document.getElementById("selectElement").addEventListener("change", handleEpisodeSelection);
-
-// Modify the Watch button event listener to play the episode only when pressed
-watchBtn.addEventListener("click", async function () {
-    const episodeSelect = document.getElementById("selectElement");
-    const selectedEpisodeId = episodeSelect.value;
-
-    if (selectedEpisodeId) {
-        mainLoading.style.display = "flex";
-        watchContainer.style.display = "none";
-        
-        try {
-            // Fetch and load the selected episode data
-            const res = await fetch(`https://${apiEndpoint}/anime/gogoanime/watch/${selectedEpisodeId}`);
-            const episodeData = await res.json();
-            displayWatchInfo(episodeData); // Function to display video and quality options
-
-            // Update history with selected episode
-            const selectedOption = episodeSelect.options[episodeSelect.selectedIndex];
-            dataEpisode = selectedOption.innerText;
-            addHistory(); // Function to save the current episode to watch history
-
-        } catch (error) {
-            console.error("Episode load error:", error);
-            alert("Failed to load episode. Please try again.");
-        } finally {
-            mainLoading.style.display = "none";
-        }
-    }
-});
-
 
 // Run the app
 initApp();
+
