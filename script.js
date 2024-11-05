@@ -233,21 +233,28 @@ function displayAnimeInfo(data) {
     });
 }
 
-// Display Episode List
-// Function to display watch info and show the video player
+// Function to display watch info and set up download functionality
 function displayWatchInfo(episodeData) {
     const watchContainer = document.getElementById("qualityContainer");
     const videoContainer = document.querySelector(".video-container");
     const videoPlayer = document.getElementById("player");
+    const downloadButton = document.getElementById("downloadButton");
     const serverSelect = document.getElementById("serverSelect");
 
     // Show the quality selection container
     watchContainer.style.display = "block";
-    videoContainer.classList.add("show"); // Show video container
+    videoContainer.classList.add("show");
     mainLoading.style.display = "none";
-    serverSelect.innerHTML = ""; // Clear previous quality options
+    serverSelect.innerHTML = "";
 
-    // Populate streaming quality buttons
+    if (episodeData.download) {
+        downloadButton.href = episodeData.download;
+        downloadButton.setAttribute("download", "video.mp4"); 
+        downloadButton.style.display = "inline-block"; 
+    } else {
+        downloadButton.style.display = "none";
+    }
+
     episodeData.sources.forEach((stream) => {
         const optionButton = document.createElement("button");
         optionButton.className = "pill-button";
@@ -257,10 +264,7 @@ function displayWatchInfo(episodeData) {
         // Add event listener to load video in iframe and highlight the selected button
         optionButton.addEventListener("click", () => {
             handleVideoPlayback(stream.url);
-
-            // Remove "active" class from all quality buttons
             document.querySelectorAll(".pill-button").forEach(btn => btn.classList.remove("active"));
-            // Add "active" class to the clicked button
             optionButton.classList.add("active");
         });
 
@@ -268,14 +272,18 @@ function displayWatchInfo(episodeData) {
     });
 }
 
-// Function to handle video playback in iframe
+// Function to handle video playback in the player or iframe
 function handleVideoPlayback(url) {
     const videoPlayer = document.getElementById('player');
-    videoPlayer.src = url; // Set the iframe source to the selected quality
+    videoPlayer.src = url;
     videoPlayer.allow = "fullscreen; autoplay; encrypted-media";
     videoPlayer.setAttribute("allowfullscreen", "true");
     videoPlayer.setAttribute("disablePictureInPicture", "true");
 }
+
+// Example usage
+document.addEventListener("DOMContentLoaded", function () {
+});
 
 
 // Format unicode date to a readable one (** hours ago)
